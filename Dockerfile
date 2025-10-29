@@ -230,7 +230,9 @@ EXPOSE ${SUPERSET_PORT}
 # Final lean image...
 ######################################################################
 FROM python-common AS lean
-
+# Install system dependencies for MySQL
+RUN apt-get update && apt-get install -y default-libmysqlclient-dev gcc pkg-config && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 # Install Python dependencies using docker/pip-install.sh
 COPY requirements/base.txt requirements/
 
@@ -242,13 +244,12 @@ RUN /app/docker/pip-install.sh --requires-build-essential -r requirements/base.t
 RUN uv pip install -e .
 
 
+# ✅ Compile all Python files as root (avoids permission denied)
+RUN python -m compileall /app/superset
 
 # ✅ Switch to non-root after compilation
 USER superset
 
-
-# ✅ Compile all Python files as root (avoids permission denied)
-RUN python -m compileall /app/superset
 ######################################################################
 # Dev image...
 ######################################################################
