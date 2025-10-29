@@ -237,13 +237,22 @@ COPY requirements/base.txt requirements/
 # Copy superset-core package needed for editable install in base.txt
 COPY superset-core superset-core
 
+# Install base dependencies
 RUN /app/docker/pip-install.sh --requires-build-essential -r requirements/base.txt
 RUN uv pip install -e .
 
+# ✅ Add MySQL client libraries
+USER root
+RUN apt-get update && apt-get install -y default-libmysqlclient-dev gcc && \
+    pip install --no-cache-dir mysqlclient pymysql && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+USER superset
 
 RUN python -m compileall /app/superset
 
-USER superset
+EXPOSE 8080
+CMD ["superset", "run", "--host=0.0.0.0", "--port=${PORT:-8080}"]
+
 
 ######################################################################
 # Dev image...
