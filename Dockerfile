@@ -196,6 +196,8 @@ RUN /app/docker/apt-install.sh \
       libecpg-dev \
       libldap2-dev
 
+RUN pip install pymysql
+
 # Pre-load examples DuckDB file if requested
 RUN if [ "$LOAD_EXAMPLES_DUCKDB" = "true" ]; then \
         mkdir -p /app/data && \
@@ -236,7 +238,6 @@ COPY requirements/base.txt requirements/
 COPY superset-core superset-core
 
 RUN /app/docker/pip-install.sh --requires-build-essential -r requirements/base.txt
-RUN pip install pymysql
 RUN uv pip install -e .
 
 
