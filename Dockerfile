@@ -263,6 +263,7 @@ COPY superset-extensions-cli superset-extensions-cli
 # Install Python dependencies using docker/pip-install.sh
 RUN /app/docker/pip-install.sh --requires-build-essential -r requirements/development.txt
 RUN uv pip install -e .
+RUN pip install pymysql
 
 # Install the superset package
 
