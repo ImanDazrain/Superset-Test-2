@@ -230,6 +230,9 @@ EXPOSE ${SUPERSET_PORT}
 # Final lean image...
 ######################################################################
 FROM python-common AS lean
+# Install system dependencies for MySQL
+RUN apt-get update && apt-get install -y default-libmysqlclient-dev gcc pkg-config && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies using docker/pip-install.sh
 COPY requirements/base.txt requirements/
@@ -241,18 +244,14 @@ COPY superset-core superset-core
 RUN /app/docker/pip-install.sh --requires-build-essential -r requirements/base.txt
 RUN uv pip install -e .
 
-# ✅ Add MySQL client libraries
-USER root
-RUN apt-get update && apt-get install -y default-libmysqlclient-dev gcc pkg-config && \
-    pip install --no-cache-dir mysqlclient pymysql && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+# Install MySQL drivers
+RUN pip install --no-cache-dir mysqlclient pymysql
 
-USER superset
-
+# ✅ Compile all Python files as root (avoids permission denied)
 RUN python -m compileall /app/superset
 
-EXPOSE 8080
-CMD ["superset", "run", "--host=0.0.0.0", "--port=${PORT:-8080}"]
+# ✅ Switch to non-root after compilation
+USER superset
 
 
 ######################################################################
