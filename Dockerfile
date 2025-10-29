@@ -281,9 +281,13 @@ USER superset
 ######################################################################
 FROM lean AS ci
 USER root
+# Add MySQL extras
 RUN uv pip install .[postgres,duckdb,mysql]
+# Extra manual install (ensures both drivers available)
+RUN pip install pymysql mysqlclient
 USER superset
-CMD ["/app/docker/entrypoints/docker-ci.sh"]
+CMD ["superset", "run", "--host=0.0.0.0", "--port=${PORT:-8080}"]
+
 
 ######################################################################
 # Showtime image - lean + DuckDB for examples database
