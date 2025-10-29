@@ -236,8 +236,9 @@ COPY requirements/base.txt requirements/
 COPY superset-core superset-core
 
 RUN /app/docker/pip-install.sh --requires-build-essential -r requirements/base.txt
-RUN uv pip install -e .
 RUN pip install pymysql
+RUN uv pip install -e .
+
 
 RUN python -m compileall /app/superset
 
