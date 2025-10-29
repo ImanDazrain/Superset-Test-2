@@ -243,9 +243,6 @@ COPY superset-core superset-core
 RUN /app/docker/pip-install.sh --requires-build-essential -r requirements/base.txt
 RUN uv pip install -e .
 
-# ✅ Install MySQL drivers explicitly
-RUN pip install --no-cache-dir mysqlclient pymysql
-
 # ✅ Compile all Python files while root (fixes permission issues)
 RUN python -m compileall /app/superset
 
