@@ -196,7 +196,7 @@ RUN /app/docker/apt-install.sh \
       libecpg-dev \
       libldap2-dev
 
-RUN pip install pymysql
+
 
 # Pre-load examples DuckDB file if requested
 RUN if [ "$LOAD_EXAMPLES_DUCKDB" = "true" ]; then \
@@ -281,7 +281,7 @@ USER superset
 ######################################################################
 FROM lean AS ci
 USER root
-RUN uv pip install .[postgres,duckdb]
+RUN uv pip install .[postgres,duckdb,mysql]
 USER superset
 CMD ["/app/docker/entrypoints/docker-ci.sh"]
 
