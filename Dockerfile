@@ -234,9 +234,6 @@ EXPOSE ${SUPERSET_PORT}
 ######################################################################
 FROM python-common AS lean
 
-# Install system dependencies for MySQL
-RUN apt-get update && apt-get install -y default-libmysqlclient-dev gcc pkg-config && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies using docker/pip-install.sh
 COPY requirements/base.txt requirements/
