@@ -243,9 +243,10 @@ RUN uv pip install -e .
 
 # ✅ Add MySQL client libraries
 USER root
-RUN apt-get update && apt-get install -y default-libmysqlclient-dev gcc && \
+RUN apt-get update && apt-get install -y default-libmysqlclient-dev gcc pkg-config && \
     pip install --no-cache-dir mysqlclient pymysql && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
+
 USER superset
 
 RUN python -m compileall /app/superset
@@ -292,8 +293,7 @@ FROM lean AS ci
 USER root
 # Add MySQL extras
 RUN uv pip install .[postgres,duckdb,mysql]
-# Extra manual install (ensures both drivers available)
-RUN pip install pymysql mysqlclient
+
 USER superset
 CMD ["superset", "run", "--host=0.0.0.0", "--port=${PORT:-8080}"]
 
