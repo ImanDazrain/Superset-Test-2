@@ -238,8 +238,9 @@ FROM python-common AS lean
 RUN apt-get update && apt-get install -y default-libmysqlclient-dev gcc pkg-config && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Copy Superset app files
-COPY --from=builder /app /app
+# Install Python dependencies using docker/pip-install.sh
+COPY requirements/base.txt requirements/
+COPY superset-core superset-core
 
 # Install Python dependencies
 RUN /app/docker/pip-install.sh --requires-build-essential -r requirements/base.txt
@@ -254,11 +255,6 @@ RUN python -m compileall /app/superset
 # Drop privileges
 USER superset
 
-# Expose port
-EXPOSE 8088
-
-# Run Superset
-CMD ["superset", "run"]
 
 ######################################################################
 # Dev image...
