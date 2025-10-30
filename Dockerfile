@@ -277,10 +277,7 @@ RUN uv pip install .[postgres]
 RUN python -m compileall /app/superset
 
 USER superset
-USER root
-RUN apt-get update && apt-get install -y default-libmysqlclient-dev build-essential pkg-config
-RUN pip install --no-cache-dir pymysql mysqlclient
-USER superset
+
 
 ######################################################################
 # CI image...
@@ -300,5 +297,8 @@ CMD ["superset", "run", "--host=0.0.0.0", "--port=${PORT:-8080}"]
 FROM lean AS showtime
 USER root
 RUN uv pip install .[duckdb]
+RUN apt-get update && apt-get install -y default-libmysqlclient-dev build-essential pkg-config
+# activate venv before installing MySQL drivers
+RUN . /app/.venv/bin/activate && pip install --no-cache-dir pymysql mysqlclient
 USER superset
 CMD ["/app/docker/entrypoints/docker-ci.sh"]
