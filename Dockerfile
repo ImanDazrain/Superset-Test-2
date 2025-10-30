@@ -277,6 +277,10 @@ RUN uv pip install .[postgres]
 RUN python -m compileall /app/superset
 
 USER superset
+USER root
+RUN apt-get update && apt-get install -y default-libmysqlclient-dev build-essential pkg-config
+RUN pip install --no-cache-dir pymysql mysqlclient
+USER superset
 
 ######################################################################
 # CI image...
